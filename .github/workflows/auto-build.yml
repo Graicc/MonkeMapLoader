@@ -119,8 +119,10 @@ jobs:
       if: "${{ env.WEBHOOK_URL != '' }}" # If a webhook is supplied, use it instead
       shell: bash
       run: |
+        str="$(jq '.head_commit.message' $GITHUB_EVENT_PATH)"
+        title=$(echo "$str" | head -1)
         curl https://raw.githubusercontent.com/ChaoticWeg/discord.sh/master/discord.sh -o discord.sh
         ./discord.sh \
         --webhook-url="${{ secrets.WEBHOOK_URL }}" \
-        --text '**${{github.actor}}** on **${{github.repository}}**(${{github.ref}}): *${{ github.event.head_commit.message }}*\n<https://github.com/${{github.repository}}/commit/${{github.sha}}>' \
+        --text "**${{github.actor}}** on **${{github.repository}}**(${{github.ref}}): *$title*\n<https://github.com/${{github.repository}}/commit/${{github.sha}}>" \
         --file Build.zip
